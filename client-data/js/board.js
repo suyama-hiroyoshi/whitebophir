@@ -538,12 +538,13 @@ Tools.toolHooks = [
 		function compileTouch(listener) { //closure
 			return (function touchListen(evt) {
 				//Currently, we don't handle multitouch
-				if (Tools.curTool.name == 'Eraser') {
+				if (Tools.curTool.name == 'Eraser' || (Tools.curTool.name == 'Hand' && Tools.curTool.secondary.active)) {
 					return compileTouches(evt, listener);
 				}
 				// マルチタッチを検知するため、最初の描画を遅らせている
 				if (!Tools.isCompile) {
 					setTimeout(function () {
+						Tools.isCompile = true;
 						return compileTouches(evt, listener);
 					}, 20);
 				} else {
@@ -554,17 +555,16 @@ Tools.toolHooks = [
 
 		function compileTouches(evt, listener) {
 			if (evt.changedTouches.length == 1) {
+			    // コンパイルが完了していないタッチイベントに関しては何も実行させない。
+			    // 消しゴムツールに関しては例外とする。
+    			if (!Tools.isCompile && Tools.curTool.name != 'Eraser') return;
+
 				var touch = evt.changedTouches[0];
 				var x = touch.pageX / Tools.getScale(),
 				y = touch.pageY / Tools.getScale();
 				return listener(x, y, evt, true);
 		 
 			} else if (evt.changedTouches.length == 2) {
-				if (Tools.curTool.name != "Hand") {
-			  		Tools.oldTool = Tools.curTool.name;
-			  		Tools.change("Hand");
-				}
-			} else if (evt.changedTouches.length == 3) {
 				if (Tools.curTool.name == "Hand") {
 					setTimeout(function () {
 			   			if (Tools.curTool.name == "Hand") {

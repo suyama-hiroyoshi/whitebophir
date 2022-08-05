@@ -80,7 +80,7 @@
 
 	function stopLine(x, y) {
 		//Add a last point to the line
-		continueLine(x, y);
+		//continueLine(x, y);
 		curLine = null;
 		Tools.isCompile = false;
 	}

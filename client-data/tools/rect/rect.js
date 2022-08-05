@@ -92,7 +92,7 @@
 
 		//Add a last point to the shape
 		end = true;
-		move(x, y);
+		//move(x, y);
 		end = false;
 		curId = "";
 	}
