@@ -37,9 +37,9 @@
     var cursorTool = {
         "name": "Cursor",
         "listeners": {
-            "press": function () { sending = false;Tools.isCompile = true; },
+            "press": function () { sending = false;},
             "move": handleMarker,
-            "release": function () { sending = true;Tools.isCompile = false; },
+            "release": function () { sending = true;},
         },
         "onSizeChange": onSizeChange,
         "draw": draw,

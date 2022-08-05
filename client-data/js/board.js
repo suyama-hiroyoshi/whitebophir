@@ -565,6 +565,11 @@ Tools.toolHooks = [
 				return listener(x, y, evt, true);
 		 
 			} else if (evt.changedTouches.length == 2) {
+				if (Tools.curTool.name != "Hand") {
+					Tools.oldTool = Tools.curTool.name;
+					Tools.change("Hand");
+			  }
+			} else if (evt.changedTouches.length == 3) {
 				if (Tools.curTool.name == "Hand") {
 					setTimeout(function () {
 			   			if (Tools.curTool.name == "Hand") {
