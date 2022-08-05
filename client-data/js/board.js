@@ -563,12 +563,6 @@ Tools.toolHooks = [
 				var x = touch.pageX / Tools.getScale(),
 				y = touch.pageY / Tools.getScale();
 				return listener(x, y, evt, true);
-		 
-			} else if (evt.changedTouches.length == 2) {
-				if (Tools.curTool.name != "Hand") {
-					Tools.oldTool = Tools.curTool.name;
-					Tools.change("Hand");
-			  }
 			} else if (evt.changedTouches.length == 3) {
 				if (Tools.curTool.name == "Hand") {
 					setTimeout(function () {
