@@ -457,6 +457,7 @@
 	}
 
 	function press(x, y, evt, isTouchEvent) {
+		Tools.isCompile = true;
 		if (!handTool.secondary.active) startHand(x, y, evt, isTouchEvent);
 		else clickSelector(x, y, evt, isTouchEvent);
 	}
@@ -471,6 +472,7 @@
 		move(x, y, evt, isTouchEvent);
 		if (handTool.secondary.active) releaseSelector(x, y, evt, isTouchEvent);
 		selected = null;
+		Tools.isCompile = false;
 	}
 
 	function deleteShortcut(e) {
