@@ -95,7 +95,7 @@
     function stop(x, y) {
         lastPos.x = x;
         lastPos.y = y;
-        doUpdate(true);
+        //doUpdate(true);
         curUpdate.id = "";
         Tools.isCompile = false;
     }

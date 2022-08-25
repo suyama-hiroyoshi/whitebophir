@@ -266,6 +266,7 @@ Tools.add = function (newTool) {
 };
 
 Tools.change = function (toolName) {
+	if(toolName == null) return;
 	var newTool = Tools.list[toolName];
 	var oldTool = Tools.curTool;
 	if (!newTool) throw new Error("Trying to select a tool that has never been added!");
@@ -332,7 +333,7 @@ Tools.removeToolListeners = function removeToolListeners(tool) {
 	// Handle secondary tool switch with shift (key code 16)
 	function handleShift(active, evt) {
 		if (evt.keyCode === 16 && Tools.curTool.secondary && Tools.curTool.secondary.active !== active) {
-			//Tools.change(Tools.curTool.name);
+			Tools.change(Tools.curTool.name);
 		}
 	}
 	window.addEventListener("keydown", handleShift.bind(null, true));
@@ -535,16 +536,17 @@ Tools.toolHooks = [
 		}
 
 		function compileTouch(listener) { //closure
-			console.log('compileTouch');
 			return (function touchListen(evt) {
 				//Currently, we don't handle multitouch
-				if (Tools.curTool.name == 'Eraser') {
+				if (Tools.curTool.name == 'Eraser' || (Tools.curTool.name == 'Hand' && Tools.curTool.secondary.active)) {
 					return compileTouches(evt, listener);
 				}
+				// マルチタッチを検知するため、最初の描画を遅らせている
 				if (!Tools.isCompile) {
 					setTimeout(function () {
+						Tools.isCompile = true;
 						return compileTouches(evt, listener);
-					}, 10);
+					}, 20);
 				} else {
 					return compileTouches(evt, listener);
 				}
@@ -553,23 +555,30 @@ Tools.toolHooks = [
 
 		function compileTouches(evt, listener) {
 			if (evt.changedTouches.length == 1) {
+			    // コンパイルが完了していないタッチイベントに関しては何も実行させない。
+			    // 消しゴムツールに関しては例外とする。
+    			if (!Tools.isCompile && Tools.curTool.name != 'Eraser') return;
+
 				var touch = evt.changedTouches[0];
 				var x = touch.pageX / Tools.getScale(),
-					y = touch.pageY / Tools.getScale();
+				y = touch.pageY / Tools.getScale();
 				return listener(x, y, evt, true);
-
-			} else if (evt.changedTouches.length == 2) {
-				if (Tools.curTool.name != "Hand") {
-					Tools.oldTool = Tools.curTool.name;
-					Tools.change("Hand");
-				}
 			} else if (evt.changedTouches.length == 3) {
-				if (Tools.oldTool != null) {
+				if (Tools.curTool.name == "Hand") {
 					setTimeout(function () {
-						Tools.change(Tools.oldTool);
-						Tools.oldTool = null;
-					},100) // 300->100 changed.
-				}
+			   			if (Tools.curTool.name == "Hand") {
+							Tools.change(Tools.oldTool);
+							Tools.oldTool = null; 
+			   			}
+			  		}, 200);
+				} else {
+					setTimeout(function () {
+			   			if (Tools.curTool.name != "Hand") {
+							Tools.oldTool = Tools.curTool.name;
+							Tools.change("Hand"); 
+			   			}
+			  		}, 200);
+			 	}
 			}
 			return true;
 		}
