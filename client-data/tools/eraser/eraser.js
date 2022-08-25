@@ -29,6 +29,7 @@
 	var erasing = false;
 
 	function startErasing(x, y, evt) {
+		// マルチタッチ検知しなくてもよいフラグ
 		Tools.isCompile = true;
 		//Prevent the press from being interpreted by the browser
 		evt.preventDefault();
@@ -62,6 +63,7 @@
 
 	function stopErasing() {
 		erasing = false;
+		// 一連の操作が終わっているので、マルチタッチ検知をするフラグ
 		Tools.isCompile = false;
 	}
 

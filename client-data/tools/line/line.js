@@ -38,6 +38,7 @@
 	}
 
 	function startLine(x, y, evt) {
+		// マルチタッチ検知しなくてもよいフラグ
 		Tools.isCompile = true;
 		//Prevent the press from being interpreted by the browser
 		evt.preventDefault();
@@ -52,13 +53,16 @@
 			'y': y
 		}
 
-//		Tools.drawAndSend(curLine);
+		// タッチ時に描画されないように処理をコメントアウト
+		//Tools.drawAndSend(curLine);
 	}
 
 	function continueLine(x, y, evt) {
 		/*Wait 70ms before adding any point to the currently drawing line.
 		This allows the animation to be smother*/
 		if (curLine !== null) {
+			// startLineで処理をしなかったのでここに入れている
+			// これがないと描画が出来ない
 			Tools.drawAndSend(curLine);
 			if (lineTool.secondary.active) {
 				var alpha = Math.atan2(y - curLine.y, x - curLine.x);
@@ -80,8 +84,10 @@
 
 	function stopLine(x, y) {
 		//Add a last point to the line
+		// 指を離したときに描画されないように処理をコメントアウト
 		//continueLine(x, y);
 		curLine = null;
+		// 一連の操作が終わっているので、マルチタッチ検知をするフラグ
 		Tools.isCompile = false;
 	}
 
