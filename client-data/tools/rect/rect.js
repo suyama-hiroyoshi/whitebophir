@@ -39,7 +39,8 @@
 		lastTime = performance.now(); //The time at which the last point was drawn
 
 	function start(x, y, evt) {
-
+		
+		// マルチタッチ検知しなくてもよいフラグ
 		Tools.isCompile = true;
 
 		//Prevent the press from being interpreted by the browser
@@ -87,11 +88,12 @@
 	}
 
 	function stop(x, y) {
-
+		// 一連の操作が終わっているので、マルチタッチ検知をするフラグ
 		Tools.isCompile = false;
 
 		//Add a last point to the shape
 		end = true;
+		// 指を離したときに描画されないように処理をコメントアウト
 		//move(x, y);
 		end = false;
 		curId = "";

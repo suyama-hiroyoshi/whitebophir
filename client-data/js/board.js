@@ -48,7 +48,10 @@ Tools.drawingEvent = true;
 Tools.showMarker = true;
 Tools.showOtherCursors = true;
 Tools.showMyCursor = true;
+// 3点タップ時に手のひらツールに切り替えた後、元のツールに戻すためのツール名が入る
 Tools.oldTool = null;
+// マルチタッチの検知を行っているかどうかのフラグ
+// press, move, releaseが走るが、pressの時のみマルチタッチを検知するために設けている
 Tools.isCompile = false;
 
 Tools.isIE = /MSIE|Trident/.test(window.navigator.userAgent);
@@ -248,10 +251,6 @@ Tools.register = function registerTool(newTool) {
 /**
  * Add a new tool to the user interface
  */
-/**
- * ツールの追加
- * ツールの使用を決めたオブジェクトが引数として渡される 
- */
 Tools.add = function (newTool) {
 	if (Tools.isBlocked(newTool)) return;
 
@@ -266,6 +265,8 @@ Tools.add = function (newTool) {
 };
 
 Tools.change = function (toolName) {
+	// Tools.changeがdelayの影響でnullを引数として渡されることがある（エラー解消用）
+	// oldToolがnullになる時があるが、delayでnullになった後にoldToolに戻そうとするときに発生する
 	if(toolName == null) return;
 	var newTool = Tools.list[toolName];
 	var oldTool = Tools.curTool;
@@ -538,10 +539,12 @@ Tools.toolHooks = [
 		function compileTouch(listener) { //closure
 			return (function touchListen(evt) {
 				//Currently, we don't handle multitouch
+				// Eraserまたはセレクタの時はdelayの処理が不要（delayがあるとうまく動かない）
 				if (Tools.curTool.name == 'Eraser' || (Tools.curTool.name == 'Hand' && Tools.curTool.secondary.active)) {
 					return compileTouches(evt, listener);
 				}
 				// マルチタッチを検知するため、最初の描画を遅らせている
+				// delayがないとmove判定になることがあるので描画されないために判定をしている
 				if (!Tools.isCompile) {
 					setTimeout(function () {
 						Tools.isCompile = true;
@@ -554,17 +557,21 @@ Tools.toolHooks = [
 		}
 
 		function compileTouches(evt, listener) {
+			// 1本指でのタッチ時
 			if (evt.changedTouches.length == 1) {
-			    // コンパイルが完了していないタッチイベントに関しては何も実行させない。
-			    // 消しゴムツールに関しては例外とする。
+			    // isCompileがfalseの時はタッチイベントに関しては何も実行させない。
+			    // 消しゴムツールに関してはisCompileに関係なく処理をする
     			if (!Tools.isCompile && Tools.curTool.name != 'Eraser') return;
 
 				var touch = evt.changedTouches[0];
 				var x = touch.pageX / Tools.getScale(),
 				y = touch.pageY / Tools.getScale();
 				return listener(x, y, evt, true);
+			// 3本指でのタッチ時
 			} else if (evt.changedTouches.length == 3) {
+				// ハンドツールかそれ以外
 				if (Tools.curTool.name == "Hand") {
+					// ハンドツールの時は、元のツールに戻すので、oldToolで切り替えを行う
 					setTimeout(function () {
 			   			if (Tools.curTool.name == "Hand") {
 							Tools.change(Tools.oldTool);
@@ -572,6 +579,7 @@ Tools.toolHooks = [
 			   			}
 			  		}, 200);
 				} else {
+					// ハンドツール以外の時は、ハンドツール切り替える
 					setTimeout(function () {
 			   			if (Tools.curTool.name != "Hand") {
 							Tools.oldTool = Tools.curTool.name;

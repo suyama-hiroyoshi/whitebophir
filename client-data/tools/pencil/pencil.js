@@ -68,6 +68,7 @@
 
 	function startLine(x, y, evt) {
 
+		// マルチタッチ検知しなくてもよいフラグ
 		Tools.isCompile = true;
 
 		//Prevent the press from being interpreted by the browser
@@ -86,6 +87,7 @@
 		});
 
 		//Immediatly add a point to the line
+		// タッチした時に描画されないように処理をコメントアウト
 		//continueLine(x, y);
 	}
 
@@ -101,11 +103,13 @@
 
 	function stopLineAt(x, y) {
 		//Add a last point to the line
+		// 指を離したときに描画されないように処理をコメントアウト
 		//continueLine(x, y);
 		stopLine();
 	}
 
 	function stopLine() {
+		// 一連の操作が終わっているので、マルチタッチ検知をするフラグ
 		Tools.isCompile = false;
 		curLineId = "";
 	}
